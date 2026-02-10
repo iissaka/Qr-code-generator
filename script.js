@@ -22,14 +22,31 @@ function generateQR(){
   const canvas = $('qrcode');
   if(!canvas) return;
   const ratio = window.devicePixelRatio || 1;
-  // Compute visual size based on available container width for better responsivity
+  // Compute visual size based on available container inner width (respect padding)
   const container = canvas.parentElement || canvas;
-  const containerWidth = Math.max(0, container.clientWidth || Math.min(window.innerWidth, 760));
-  // Leave some padding room, clamp between reasonable min/max
-  const visualSize = Math.round(Math.max(120, Math.min(containerWidth - 32, Math.min(window.innerWidth * 0.9, 520))));
+  const cs = window.getComputedStyle(container);
+  const padLeft = parseFloat(cs.paddingLeft) || 0;
+  const padRight = parseFloat(cs.paddingRight) || 0;
+  const available = Math.max(0, container.clientWidth - padLeft - padRight);
+  // Leave some margin and clamp between reasonable min/max
+  const visualSize = Math.round(Math.max(120, Math.min(available - 16, Math.min(window.innerWidth * 0.9, 520))));
   const size = Math.round(visualSize * ratio);
-  canvas.width = size; canvas.height = size;
-  canvas.style.width = visualSize + 'px'; canvas.style.height = visualSize + 'px';
+  // Let CSS scale the canvas to fill the square surface exactly
+  canvas.style.width = '100%';
+  canvas.style.height = '100%';
+  canvas.style.maxWidth = '100%';
+  canvas.style.display = 'block';
+  canvas.style.margin = '0 auto';
+
+  // Ensure the internal pixel buffer matches the displayed size * devicePixelRatio
+  // (use getBoundingClientRect to get the actual rendered square dimensions)
+  // First allow the browser to apply styles (force reflow)
+  const rect = canvas.getBoundingClientRect();
+  const displaySize = Math.max(0, Math.min(rect.width, rect.height));
+  const pixelSize = Math.max(1, Math.round(displaySize * ratio));
+  // Setting width/height resets the canvas, so do it before drawing
+  canvas.width = pixelSize;
+  canvas.height = pixelSize;
 
   clearCanvas(canvas);
 
@@ -120,4 +137,23 @@ document.addEventListener('DOMContentLoaded', ()=>{
   const input = $('qrInput'); if(input) input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter') generateQR(); });
   enableActions(false);
 });
+
+// Simple debounce helper
+function debounce(fn, wait){
+  let t;
+  return function(...args){ clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), wait); };
+}
+
+// Re-generate QR on resize/orientation change if one was already generated
+const tryRegenerate = debounce(()=>{
+  const canvas = document.getElementById('qrcode');
+  if(!canvas) return;
+  if(canvas.dataset && canvas.dataset.generated === 'true'){
+    // re-run generation to match new size
+    generateQR();
+  }
+}, 250);
+
+window.addEventListener('resize', tryRegenerate);
+window.addEventListener('orientationchange', tryRegenerate);
  
