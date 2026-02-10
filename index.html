@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LANTANA">
+<meta name="theme-color" content="#6b0f0f">
+<meta name="description" content="Générateur CV, Lettres et QR Code">
+<title>MAEL-GO</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<header>
+  <div class="header-content">
+    <div class="logo">
+      <i class="fas fa-qrcode"></i>
+      <span>MAEL-GO</span>
+    </div>
+    <p class="tagline">Générateur QR rapide </p>
+  </div>
+</header>
+
+<main class="center-wrap">
+  <section class="qr-card">
+    <h1 class="card-title">Générateur de QR Code</h1>
+    <p class="card-sub">Entrez une URL ou du texte puis appuyez sur <strong>Générer</strong>.</p>
+
+    <div class="input-row">
+      <input id="qrInput" type="text" placeholder="https://example.com ou du texte libre" aria-label="Contenu QR" />
+    </div>
+
+    <div class="controls-row">
+      <div class="color-pickers" aria-hidden="false">
+        <label for="colorDark">Couleur
+          <input id="colorDark" type="color" value="#0f172a" aria-label="Couleur QR" />
+        </label>
+        <label for="colorLight">Fond
+          <input id="colorLight" type="color" value="#ffffff" aria-label="Couleur de fond" />
+        </label>
+      </div>
+    </div>
+
+    <div class="actions-row">
+      <button id="generateBtn" class="btn-large" aria-label="Générer le QR"><i class="fas fa-sync"></i> Générer</button>
+      <button id="downloadBtn" class="btn-large" disabled aria-label="Télécharger"><i class="fas fa-download"></i> Télécharger</button>
+      <button id="copyBtn" class="btn-large" disabled aria-label="Copier"><i class="fas fa-copy"></i> Copier</button>
+    </div>
+
+    <div class="qr-preview">
+      <div class="qr-surface" role="group" aria-label="Zone QR">
+        <canvas id="qrcode" width="320" height="320" role="img" aria-label="Aperçu QR"></canvas>
+      </div>
+    </div>
+
+    <div class="hint">Astuce: utilisez des URLs complètes (https://) pour une meilleure compatibilité.</div>
+  </section>
+</main>
+
+<script src="script.js"></script>
+</body>
+</html>
