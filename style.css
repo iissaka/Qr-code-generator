@@ -56,22 +56,31 @@ header{padding:28px 16px; text-align:center}
 .btn-ghost{background:transparent;border:1px solid #e6e9ef;padding:10px 12px;border-radius:10px;color:var(--muted);cursor:pointer}
 .btn-ghost[disabled]{opacity:0.5;cursor:not-allowed}
 
-#qrcode{width:100%;max-width:320px;aspect-ratio:1/1;height:auto;border-radius:8px;background:white;box-shadow:0 6px 20px rgba(99,102,241,0.08);display:block;margin:0 auto}
-
+/* QR result wrapper: center and constrain */
 .qr-preview{display:flex;justify-content:center;align-items:center;padding:18px;border-radius:12px;background:linear-gradient(180deg, rgba(99,102,241,0.04), rgba(124,58,237,0.02));width:100%}
-.qr-surface{background:linear-gradient(180deg,#ffffff,#f8fafc);padding:18px;border-radius:14px;border:1px solid rgba(15,23,42,0.06);box-shadow:0 8px 30px rgba(15,23,42,0.04);display:flex;align-items:center;justify-content:center;position:relative;max-width:100%;width:100%;max-width:360px;margin:0 auto}
 
-/* Make canvas scale with its container while keeping a square ratio.
-   `script.js` sets exact pixel dimensions for drawing; CSS limits visual size. */
-#qrcode{
-  width:100%;
-  max-width:320px;
-  aspect-ratio:1/1;
-  height:auto;
-  border-radius:8px;
-  background:white;
-  box-shadow:0 6px 20px rgba(99,102,241,0.08);
-  display:block;
+/* Make the surface a true square box so the canvas always fits a square area */
+.qr-surface{background:transparent;padding:0;border-radius:14px;border:0;box-shadow:0 8px 30px rgba(15,23,42,0.04);display:flex;align-items:center;justify-content:center;position:relative;max-width:100%;width:100%;max-width:360px;margin:0 auto;aspect-ratio:1/1;overflow:hidden}
+
+/* Inner padded box that holds the canvas. Keeping padding here prevents
+  the padding from counting against the aspect-ratio of the outer surface. */
+.qr-inner{box-sizing:border-box;width:100%;height:100%;padding:18px;background:linear-gradient(180deg,#ffffff,#f8fafc);border-radius:14px;border:1px solid rgba(15,23,42,0.06);display:flex;align-items:center;justify-content:center}
+
+#/* Canvas fills the inner box exactly to avoid stretching; outer .qr-surface
+#  remains a true square thanks to aspect-ratio. */
+#qrcode{width:100%;height:100%;border-radius:8px;background:white;box-shadow:0 6px 20px rgba(99,102,241,0.08);display:block;margin:0}
+
+/* Scale the surface responsive to viewport while clamping to reasonable sizes
+   so it looks correct on iPhone X..17 and a wide range of Android devices. */
+.qr-surface{width:clamp(160px, 50vw, 360px)}
+.qr-inner{padding:clamp(8px, 3.5vw, 18px)}
+
+@media (max-width:420px){
+  .qr-surface{width:clamp(140px, 70vw, 260px)}
+  .qr-inner{padding:10px}
+}
+@media (min-width:421px) and (max-width:768px){
+  .qr-surface{width:clamp(200px, 42vw, 360px)}
 }
 
 .qr-surface:after{content:'';position:absolute;pointer-events:none}
